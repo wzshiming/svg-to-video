@@ -11,6 +11,8 @@ function usage() {
     console.log(`  --width <number> (default: svg width)`);
     console.log(`  --height <number> (default: svg height)`);
     console.log(`  --quality <number> (default: 100)`);
+    console.log(`  --executable-path <path> (default: puppeteer bundled chromium)`);
+    console.log(`  --help`);
 }
 
 /**
@@ -36,6 +38,8 @@ async function main() {
             options.height = parseInt(args[++i])
         } else if (arg === '--quality') {
             options.quality = parseInt(args[++i])
+        } else if (arg === '--executable-path') {
+            options.executablePath = args[++i]
         } else if (arg === '--help') {
             usage();
             process.exit(0);

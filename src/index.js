@@ -13,6 +13,7 @@ const { PuppeteerScreenRecorder } = require('puppeteer-screen-recorder');
  * @property {number} width - the width of the video.
  * @property {number} height - the height of the video.
  * @property {number} quality - the quality of the video.
+ * @property {string} executablePath - the path to the puppeteer executable.
  */
 
 
@@ -32,29 +33,33 @@ async function svgToVideo(svgPath, videoPath, options = {}) {
     const pageHeight = options.height || Math.floor(parseFloat(svg.match(/height="([\d\.]+)"/)[1]));
     const duration = (options.duration || Math.floor(parseFloat(svg.match(/animation-duration:([\d\.]+)s/)[1]))) * 1000;
 
-    // launch a new browser
-    const browser = await launch({
+    let puppeteerLaunchOptions = {
+        defaultViewport: {
+            width: pageWidth,
+            height: pageHeight,
+        },
+        executablePath: options.executablePath,
         headless: "new",
         args: [
             '--no-sandbox',
         ],
-    });
+    }
+    let puppeteerScreenRecorderOptions = {
+        fps: fps,
+        quality: quality,
+    }
+
+    // launch a new browser
+    const browser = await launch(puppeteerLaunchOptions);
 
     // create a new page
     const page = await browser.newPage();
     page.on('console', msg => console.log(msg.text()));
     page.on('pageerror', err => console.log(err));
     page.on('error', err => console.log(err));
-    await page.setViewport({
-        width: pageWidth,
-        height: pageHeight,
-    });
 
     // load the svg
-    const recorder = new PuppeteerScreenRecorder(page, {
-        fps: fps,
-        quality: quality,
-    });
+    const recorder = new PuppeteerScreenRecorder(page, puppeteerScreenRecorderOptions);
     let html = `
         <html>
             <head>
@@ -76,7 +81,7 @@ async function svgToVideo(svgPath, videoPath, options = {}) {
 
     // start recording
     await recorder.start(videoPath);
-
+   
     html = html.replace("animation-iteration-count:0", "animation-iteration-count:1");
     await page.setContent(html);
 
@@ -94,11 +99,9 @@ async function svgToVideo(svgPath, videoPath, options = {}) {
  * @param {number} ms
  * @returns {Promise<void>}
  */
-async function wait(ms) {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            resolve();
-        }, ms);
+function wait(time) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, time);
     });
 }
 
