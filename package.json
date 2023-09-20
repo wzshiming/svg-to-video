@@ -1,16 +1,16 @@
 {
   "name": "@wzshiming/svg-to-video",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Converts SVG to Video",
   "main": "src/index.js",
   "bin": {
     "svg-to-video": "src/cli.js"
   },
   "dependencies": {
+    "fluent-ffmpeg": "^2.1.2",
     "puppeteer": "^21.2.1",
-    "puppeteer-screen-recorder": "^2.1.2"
+    "puppeteer-mass-screenshots": "^1.0.15"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "node src/cli.js --help"
   },
