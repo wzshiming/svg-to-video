@@ -85,7 +85,7 @@ async function svgToVideo(svgPath, videoPath, options = {}) {
             let svg = document.querySelector("svg");
             return Math.floor(parseFloat(svg.getAttribute("height")));
         })
-        console.log("detected height:", svgHeight, "px")
+        console.log("detected height", svgHeight, "px")
     }
 
     // expose functions
@@ -173,8 +173,8 @@ async function svgToVideo(svgPath, videoPath, options = {}) {
     let toVideoWorker = pipeToVideo(videoMediatorStream, videoPath, fps)
 
     for (let { filename, timeoffset } of imagesAndTimeoffsets) {
-        let times = Math.ceil(timeoffset * fps /1000.0) + 1
-        console.log("Writing image", filename, "duration", timeoffset, "times", times)
+        let times = Math.ceil(timeoffset * fps / 1000.0) + 1
+        console.log("Writing image", filename, "duration", timeoffset, "ms", "times", times)
         let pngFilename = filename + ".png"
         await jpegToPng(filename, pngFilename);
         let imageStream = readFileSync(pngFilename);
@@ -190,7 +190,6 @@ async function svgToVideo(svgPath, videoPath, options = {}) {
     // Delete tmp dir
     console.log("Cleaning up")
     rmdirSync(tmpDir, { recursive: true });
-    
     console.log("Done")
 }
 
@@ -250,7 +249,7 @@ function pipeToVideo(videoMediatorStream, videoPath, fps) {
         outputStream.run();
     });
 }
-    
+
 /**
  * Parses a duration string.
  * @param {string} duration
