@@ -174,11 +174,9 @@ async function svgToVideo(svgPath, videoPath, options = {}) {
 
     for (let { filename, timeoffset } of imagesAndTimeoffsets) {
         let times = Math.ceil(timeoffset * fps / 1000.0) + 1
-        console.log("Writing image", filename, "duration", timeoffset, "ms", "times", times)
         let pngFilename = filename + ".png"
         await jpegToPng(filename, pngFilename);
         let imageStream = readFileSync(pngFilename);
-
         for (let i = 0; i < times; i++) {
             videoMediatorStream.write(imageStream);
         }
@@ -204,23 +202,6 @@ function wait(time) {
     });
 }
 
-/**
- * Converts jpeg to png.
- * @param {string} jpegFilename
- * @param {string} pngFilename
- * @returns {Promise<void>}
- */
-function jpegToPng(jpegFilename, pngFilename) {
-    return new Promise((resolve, reject) => {
-        ffmpeg(jpegFilename).
-            outputOptions('-c:v', 'png').
-            output(pngFilename).
-            on('end', resolve).
-            on('error', reject).
-            run();
-    });
-}
-
 /** 
  * pipe to video
  * @param {PassThrough} videoMediatorStream
@@ -230,12 +211,14 @@ function jpegToPng(jpegFilename, pngFilename) {
  */
 function pipeToVideo(videoMediatorStream, videoPath, fps) {
     return new Promise((resolve, reject) => {
-        let outputStream = ffmpeg({
-            source: videoMediatorStream,
-        })
-            .inputFPS(fps)
-            .inputOptions('-c:v', 'png')
+        let outputStream = ffmpeg({})
+            .input(videoMediatorStream)
             .inputFormat('image2pipe')
+            .inputFPS(fps)
+            .size('100%')
+            .noAudio()
+            .videoCodec('libx264')
+            .outputOptions('-pix_fmt yuv420p')
             .saveToFile(videoPath)
             .on('error', (e) => {
                 console.log("ffmpeg error", e)
@@ -268,6 +251,24 @@ function parseDuration(duration) {
         return value;
     }
     throw new Error(`Invalid duration: ${duration}`);
+}
+
+
+/**
+ * Converts jpeg to png.
+ * @param {string} jpegFilename
+ * @param {string} pngFilename
+ * @returns {Promise<void>}
+ */
+function jpegToPng(jpegFilename, pngFilename) {
+    return new Promise((resolve, reject) => {
+        ffmpeg(jpegFilename).
+            outputOptions('-c:v', 'png').
+            output(pngFilename).
+            on('end', resolve).
+            on('error', reject).
+            run();
+    });
 }
 
 
