@@ -213,7 +213,6 @@ function pipeToVideo(videoMediatorStream, videoPath, fps) {
     return new Promise((resolve, reject) => {
         let outputStream = ffmpeg({})
             .input(videoMediatorStream)
-            .inputFormat('image2pipe')
             .inputFPS(fps)
             .size('100%')
             .noAudio()
