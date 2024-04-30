@@ -1,6 +1,6 @@
 {
   "name": "@wzshiming/svg-to-video",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Converts SVG to Video",
   "main": "src/index.js",
   "bin": {
