@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "fluent-ffmpeg": "^2.1.2",
-    "puppeteer": "^21.2.1",
+    "puppeteer": "^25.6.0",
     "puppeteer-mass-screenshots": "^1.0.15"
   },
   "scripts": {
